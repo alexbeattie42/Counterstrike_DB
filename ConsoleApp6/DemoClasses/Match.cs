@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp6.DemoClasses
+namespace CounterStrikeDB.DemoClasses
 {
     class Match
     {

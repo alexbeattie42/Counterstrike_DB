@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleApp6.DemoClasses;
+using CounterStrikeDB.DemoClasses;
 
-namespace ConsoleApp6
+namespace CounterStrikeDB
 {
     class Program
     {
@@ -15,8 +15,22 @@ namespace ConsoleApp6
             List<Match> matches = Util.LoadJSON<List<Match>>("matches.json"); // list of all matches
             Dictionary<string, string> playerAvatars = Util.LoadJSON<Dictionary<string, string>>("playerAvatars.json"); // list of player avatar images (steam urls)
             List<Player> players = Util.LoadJSON<List<Player>>("players.json"); // list of all players
-            Dictionary<long, string> uidTable = Util.LoadJSON<Dictionary<long, string>>("uidTable.json"); // list of custom UIDs and associated steamids
+            //Dictionary<long, string> uidTable = Util.LoadJSON<Dictionary<long, string>>("uidTable.json"); // list of custom UIDs and associated steamids
 
+            var dbCon = DBConnection.Instance();
+            dbCon.DatabaseName = "test";
+            Queries queries = new Queries();
+            queries.PlayerAvatars = playerAvatars;
+
+            //queries.TestConnection();
+            queries.AddStatTypes();
+            queries.AddAllPlayers(players);
+            queries.AddGlobalStats(globalStats);
+            queries.AddAllMatches(matches);
+            
+
+
+            Console.ReadLine();
             // you can do what you need to here
         }
     }

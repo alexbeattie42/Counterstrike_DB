@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ConsoleApp6.DemoClasses
+namespace CounterStrikeDB.DemoClasses
 {
     public class Player
     {

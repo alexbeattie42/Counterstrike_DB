@@ -1,4 +1,4 @@
-﻿namespace ConsoleApp6.DemoClasses
+﻿namespace CounterStrikeDB.DemoClasses
 {
     public class Award
     {
