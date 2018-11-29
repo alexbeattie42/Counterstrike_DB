@@ -201,7 +201,7 @@ namespace CounterStrikeDB
             string query;
             //query = String.Format("INSERT INTO (Name,RoundsWin,Kills,Assists,Deaths,HltvRating)  TEAM VALUES (\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\")",
             //    team.Name, team.RoundWins,team.Kills,team.Assists,team.Deaths,team.HltvRating);
-            query = String.Format("INSERT INTO TEAM (Name,Captain) VALUES (\"{0}\",\"{1}\")", team.Name,team.Captain);
+            query = String.Format("INSERT INTO TEAM (Name,Captain,RoundWins,Kills,Assists,Deaths,HltvRating) VALUES (\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\",\"{5}\",\"{6}\")", team.Name,team.Captain,team.RoundWins,team.Kills,team.Assists,team.Deaths,team.HltvRating);
             Console.WriteLine(query);
             ExecuteQuery(query);
             string pk = getLastPk();
@@ -214,6 +214,12 @@ namespace CounterStrikeDB
         public void AddAllTeams(List<Team> teams)
         {
             teams.ForEach(team => AddTeam(team));
+        }
+        public void AddTeamsToMatch(string matchID,long teamAID,long teamBID, long winID, string winReason )
+        {
+            string query = String.Format("INSERT INTO Teams_In_Match VALUES (\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\")", matchID, teamAID, teamBID, winID,winReason);
+            Console.WriteLine(query);
+            ExecuteQuery(query);
         }
         public void AddTeamsToMatch(string matchID,long teamAID,long teamBID)
         {
