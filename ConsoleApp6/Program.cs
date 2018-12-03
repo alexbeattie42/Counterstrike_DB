@@ -11,6 +11,7 @@ namespace CounterStrikeDB
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Starting Database Loading");
             GlobalStats globalStats = Util.LoadJSON<GlobalStats>("global.json"); // some global stats
             List<Match> matches = Util.LoadJSON<List<Match>>("matches.json"); // list of all matches
             Dictionary<string, string> playerAvatars = Util.LoadJSON<Dictionary<string, string>>("playerAvatars.json"); // list of player avatar images (steam urls)
@@ -29,9 +30,9 @@ namespace CounterStrikeDB
             queries.AddAllMatches(matches);
 
             dbCon.Close();
-            
 
 
+            Console.WriteLine("Finnished Loading Database");
             Console.ReadLine();
             // you can do what you need to here
         }
