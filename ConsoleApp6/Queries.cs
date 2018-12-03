@@ -26,32 +26,48 @@ namespace CounterStrikeDB
                 var cmd = new MySqlCommand(queryStr, dbCon.Connection);
                 try
                 {
-                    var reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        string result = reader.GetString(0);
-                        //Console.WriteLine(result);
-                        return result;
+                        while (reader.Read())
+                        {
+                            string result = reader.GetString(0);
+                            //Console.WriteLine(result);
+                            return result;
+                        }
+
                     }
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Error Execution SQL Statment:" + e);
                 }
-                finally
-                {
-                    dbCon.Close();
-                }
+
 
             }
             return null;
+        }
+        private void ExecuteNonQuery(string queryStr)
+        {
+            if (dbCon.IsConnect())
+            {
+                var cmd = new MySqlCommand(queryStr, dbCon.Connection);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error Execution SQL Statment:" + e);
+                }
+             
+            }
         }
         public void AddStatTypes()
         {
             foreach(StatType statType in Enum.GetValues(typeof(StatType)))
             {
                 string query = String.Format("INSERT INTO `Stat_Types` VALUES (\"{0}\",\"{1}\")",statType.ToString("D"), statType);
-                ExecuteQuery(query);
+                ExecuteNonQuery(query);
             }
            
 
@@ -70,31 +86,19 @@ namespace CounterStrikeDB
 
             }
         }
-        //public void AddAllWeapons(Dictionary<string, WeaponStat> weaponStats)
-        //{
-        //    if (weaponStats != null)
-        //    {
-        //        foreach (KeyValuePair<string, WeaponStat> weaponStat in weaponStats)
-        //        {
-        //            AddWeapon(weaponStat.Key);
-        //        }
-
-        //    }
-           
-        //}
         public void AddWeaponStats(long playerId,WeaponStat weapon, long weaponId, long matchId, StatType statType)
         {
             long statID = AddStats(playerId, matchId, "Weapon_Stat", 0,statType );
             string query = String.Format("INSERT INTO `Weapon_Stats`  VALUES (\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\")", weaponId, statID, weapon.Shots, weapon.Kills, weapon.Deaths, weapon.Hits, weapon.Damage);
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
         }
         public long AddWeapon(string weaponName) 
         {
             string wKey = getWeaponIdStr(weaponName);
             if (wKey == null) 
             {
-                string query = String.Format("INSERT INTO `WEAPON` (Name) VALUES (\"{0}\")", weaponName);
-                ExecuteQuery(query);
+                string query = String.Format("INSERT INTO `Weapon` (Name) VALUES (\"{0}\")", weaponName);
+                ExecuteNonQuery(query);
                 return long.Parse(getLastPk());
             }
             else return long.Parse(wKey);
@@ -153,14 +157,14 @@ namespace CounterStrikeDB
             {
                 query = String.Format("INSERT INTO `Statistics` (User_ID,Title,Value, Type) VALUES (\"{0}\",\"{1}\",\"{2}\",\"{3}\")", playerID, statName, value, statType.ToString("D"));
             }
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
             return long.Parse(getLastPk());
         }
         public void AddMatch(Match match)
         {
             string query = String.Format("INSERT INTO `Match` VALUES (\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\",{5})",match.UID, match.UnixTime,btoi( match.Valid),match.Map,match.Rounds,btoi(match.HasPicks));
             Console.WriteLine(query);
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
             long teamAID = AddTeam(match.TeamA);
             long teamBID = AddTeam(match.TeamB);
 
@@ -190,7 +194,7 @@ namespace CounterStrikeDB
             AddPlayer(player);
             string query = String.Format("INSERT INTO Belongs_To (User_ID,Team_ID) VALUES (\"{0}\",\"{1}\")", playerID,teamID);
             Console.WriteLine(query);
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
         }
         public void AddAllPlayersToTeam(long teamID, List<long> playerIDs )
         {
@@ -199,11 +203,9 @@ namespace CounterStrikeDB
         public long AddTeam(Team team)
         {
             string query;
-            //query = String.Format("INSERT INTO (Name,RoundsWin,Kills,Assists,Deaths,HltvRating)  TEAM VALUES (\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\")",
-            //    team.Name, team.RoundWins,team.Kills,team.Assists,team.Deaths,team.HltvRating);
-            query = String.Format("INSERT INTO TEAM (Name,Captain,RoundWins,Kills,Assists,Deaths,HltvRating) VALUES (\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\",\"{5}\",\"{6}\")", team.Name,team.Captain,team.RoundWins,team.Kills,team.Assists,team.Deaths,team.HltvRating);
+            query = String.Format("INSERT INTO `Team` (Name,Captain,RoundWins,Kills,Assists,Deaths,HltvRating) VALUES (\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\",\"{5}\",\"{6}\")", team.Name,team.Captain,team.RoundWins,team.Kills,team.Assists,team.Deaths,team.HltvRating);
             Console.WriteLine(query);
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
             string pk = getLastPk();
             long teamID = long.Parse(pk);
             AddAllPlayersToTeam(teamID,team.SteamIDs);
@@ -219,17 +221,17 @@ namespace CounterStrikeDB
         {
             string query = String.Format("INSERT INTO Teams_In_Match VALUES (\"{0}\",\"{1}\",{2},\"{3}\",\"{4}\")", matchID, teamAID, teamBID, winID,winReason);
             Console.WriteLine(query);
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
         }
         public void AddTeamsToMatch(string matchID,long teamAID,long teamBID)
         {
             string query = String.Format("INSERT INTO Teams_In_Match VALUES (\"{0}\",\"{1}\",\"{2}\")",matchID, teamAID, teamBID);
             Console.WriteLine(query);
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
         }
         public void AddPlayer(Player player)
         {
-            string checkPlayer = String.Format("select User_ID from PLAYER WHERE User_ID = \"{0}\"",player.SteamID);
+            string checkPlayer = String.Format("select User_ID from `Player` WHERE User_ID = \"{0}\"",player.SteamID);
             string cPResult = ExecuteQuery(checkPlayer);
             //Console.WriteLine(cPResult);
             if (cPResult == null)
@@ -237,15 +239,15 @@ namespace CounterStrikeDB
                 string query;
                 if (playerAvatars.TryGetValue(player.UID, out string avatar))
                 {
-                    query = String.Format("INSERT INTO PLAYER VALUES (\"{0}\",\"{1}\",\"{2}\")", player.SteamID, player.Name, avatar);
+                    query = String.Format("INSERT INTO `Player` VALUES (\"{0}\",\"{1}\",\"{2}\")", player.SteamID, player.Name, avatar);
                 }
                 else
                 {
-                    query = String.Format("INSERT INTO PLAYER (User_ID, NAME) VALUES (\"{0}\",\"{1}\")", player.SteamID, player.Name);
+                    query = String.Format("INSERT INTO `Player` (User_ID, NAME) VALUES (\"{0}\",\"{1}\")", player.SteamID, player.Name);
                 }
 
                 Console.WriteLine(query);
-                ExecuteQuery(query);
+                ExecuteNonQuery(query);
                 AddAllPlayerStats(player, NO_MATCH, StatType.Player_Stat);
 
             }
@@ -264,7 +266,7 @@ namespace CounterStrikeDB
         public void TestConnection()
         {
             string query = "SHOW TABLES FROM " + dbCon.DatabaseName;
-            ExecuteQuery(query);
+            ExecuteNonQuery(query);
         }
 
 

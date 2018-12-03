@@ -18,7 +18,7 @@ namespace CounterStrikeDB
             //Dictionary<long, string> uidTable = Util.LoadJSON<Dictionary<long, string>>("uidTable.json"); // list of custom UIDs and associated steamids
 
             var dbCon = DBConnection.Instance();
-            dbCon.DatabaseName = "test";
+            dbCon.DatabaseName = "aytgrcom_Counterstrike";
             Queries queries = new Queries();
             queries.PlayerAvatars = playerAvatars;
 
@@ -27,6 +27,8 @@ namespace CounterStrikeDB
             queries.AddAllPlayers(players);
             queries.AddGlobalStats(globalStats);
             queries.AddAllMatches(matches);
+
+            dbCon.Close();
             
 
 

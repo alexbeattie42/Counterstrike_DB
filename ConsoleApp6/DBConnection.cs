@@ -10,9 +10,9 @@ namespace CounterStrikeDB
 {
     class DBConnection
     {
-        private string server = "localhost";
-        private string user = "root";
-        private string password = "";
+        private string server = "asyourtiger.com";
+        private string user = "aytgrcom_counterstrike";
+        private string password = "counterstrike1$";
         private string port = "3306";
         private string sslM = "none";
 
@@ -46,23 +46,26 @@ namespace CounterStrikeDB
         {
             if (Connection == null)
             {
+                Console.WriteLine("Connecting");
                 if (String.IsNullOrEmpty(databaseName))
                     return false;
-        
-                string connstring = String.Format("server={0};port={1};user id={2}; password={3}; database={4}; SslMode={5}", server, port, user, password, databaseName, sslM);
+
+                string connstring = String.Format("server={0};port={1};user id={2}; password={3}; database={4}; SslMode={5};", server, port, user, password, databaseName, sslM);
                 connection = new MySqlConnection(connstring);
-            }
-            try
-            {
-                connection.Open();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Connection Failure:" + e);
-                return false;
+                try
+                {
+                    connection.Open();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Connection Failure:" + e);
+                    return false;
+                }
+
             }
            
+            return true;
         }
 
         public void Close()
